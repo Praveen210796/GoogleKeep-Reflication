@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GoogleKeep</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/image.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  </head>
+
+  <body onload="fetchNotes()">
+    <!-- **********************Header******************************** -->
+    <h2>GoogleKeep</h2>
+
+    <div class="Googleimg">
+        <p><a href="signup.html"><img alt="google image" src="googlekeep.jpg" height="35" width="60"><h5>Registration</h5></a> </p>
+        </div>
+        
+        <!-- Search Button  -->
+        <div class="Input">
+        <input type="search" id="myInput"  size="93" style="height: 38px" placeholder="search" ></input>
+        </div>
+        
+<!-- **********Add Your Notes(list) Section******** -->
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+
+        </nav>
+        <h3 class="text-muted">GoogleKeep</h3>
+      </div>
+
+      <div class="jumbotron">
+        <h2>Add Your Notes</h2>
+        <form id="myForm">
+          <div class="form-group">
+            <label>NewList</label>
+            <input type="text" class="form-control" id="siteName" placeholder="Take a note">
+          </div>
+         
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+
+      <div class="row marketing">
+        <div class="col-lg-12">
+          <div id="notesResults"></div>
+        </div>
+      </div>
+
+     <!--**************** NEW NOTE WITH IMAGES************ -->
+<h2>New Note With Image</h2><br>
+
+    <input type="file" id="real-file" hidden="hidden" />
+<button type="button" id="custom-button">CHOOSE A FILE</button>
+<span id="custom-text">No file chosen, yet.</span><br>
+
+<br>
+<br>
+ 
+<!-- ***********Google Map (Enter Location Section) ************-->
+<form>
+  <div class="container">
+    <h2 id="text-center">Enter Location: </h2>
+    <form id="location-form">
+      <input type="text" id="location-input" class="form-control form-control-lg">
+      <br>
+      <button type="submit" class="btn btn-primary btn-block">Submit</button>
+    </form>
+    <div class="card-block" id="formatted-address"></div>
+    <div class="card-block" id="address-components"></div>
+    <div class="card-block" id="geometry"></div>
+  </div>
+
+  <script>
+    // Call Geocode
+    // geocode();
+
+    // Get location form
+    var locationForm = document.getElementById('location-form');
+
+    // Listen for submiot
+    locationForm.addEventListener('submit', geocode);
+
+    function geocode(e){
+      // Prevent actual submit
+      e.preventDefault();
+
+      var location = document.getElementById('location-input').value;
+
+      axios.get('https://maps.googleapis.com/maps/api/geocode/json',{
+        params:{
+          address:location,
+          key:'AIzaSyBBqNlas0Alt8XIPlews-DVb3wHTpNrDhs'
+        }
+      })
+      .then(function(response){
+        // Log full response
+        console.log(response);
+
+        // Formatted Address
+        var formattedAddress = response.data.results[0].formatted_address;
+        var formattedAddressOutput = `
+          <ul class="list-group">
+            <li class="list-group-item">${formattedAddress}</li>
+          </ul>
+        `;
+
+        // Address Components
+        var addressComponents = response.data.results[0].address_components;
+        var addressComponentsOutput = '<ul class="list-group">';
+        for(var i = 0;i < addressComponents.length;i++){
+          addressComponentsOutput += `
+            <li class="list-group-item"><strong>${addressComponents[i].types[0]}</strong>: ${addressComponents[i].long_name}</li>
+          `;
+        }
+        addressComponentsOutput += '</ul>';
+
+        // Geometry
+        var lat = response.data.results[0].geometry.location.lat;
+        var lng = response.data.results[0].geometry.location.lng;
+        var geometryOutput = `
+          <ul class="list-group">
+            <li class="list-group-item"><strong>Latitude</strong>: ${lat}</li>
+            <li class="list-group-item"><strong>Longitude</strong>: ${lng}</li>
+          </ul>
+        `;
+
+        // Output to app
+        document.getElementById('formatted-address').innerHTML = formattedAddressOutput;
+        document.getElementById('address-components').innerHTML = addressComponentsOutput;
+        document.getElementById('geometry').innerHTML = geometryOutput;
+      })
+      .catch(function(error){
+        console.log(error);
+      });
+    }
+  </script>
+
+
+<!-- Footer -->
+<footer class="footer">
+    <p>&copy; 2020 GoogleKeep, Inc.</p>
+  </footer>
+
+</div> <!-- /container -->
+
+    <script
+    src="https://code.jquery.com/jquery-3.1.1.js"
+    integrity="sha256-16cdPddA6VdVInumRGo6IbivbERE8p7CQR3HzTBuELA="
+    crossorigin="anonymous"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/image.js"></script>
+  </body>
+</html>
